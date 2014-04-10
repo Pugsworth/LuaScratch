@@ -1,5 +1,11 @@
 import sublime, sublime_plugin, tempfile, os, re;
 
+global g_current_file;
+global g_last_view;
+g_current_file = None;
+g_last_view = None;
+
+
 # Two methods that could be used here:
 
 	# get language name
@@ -74,7 +80,7 @@ class ScratchpadCommand(sublime_plugin.TextCommand):
 		return selectedText;
 
 	def run(self, edit):
-		if (not self.view.is_dirty() or not self.view.is_scratch()) and self.view.file_name() != None:
+		if self.view.sel()[0].empty() and (not self.view.is_dirty() or not self.view.is_scratch()) and self.view.file_name() != None:
 			self.view.window().run_command("build");
 			return;
 
@@ -89,11 +95,21 @@ class ScratchpadCommand(sublime_plugin.TextCommand):
 			g_current_file = ScratchpadFile(f);
 			new_view = self.view.window().open_file(f.name);
 
+		global g_last_view;
+		g_last_view = self.view;
+
 class ScratchpadEvent(sublime_plugin.EventListener):
 	def on_load(self, view):
-		global g_current_file
-		if os.path.normcase(g_current_file.file_name) == os.path.normcase(view.file_name()):
-			view.window().run_command("build");
-			view.window().run_command("close");
+		global g_current_file;
+		if g_current_file != None and os.path.normcase(g_current_file.file_name) == os.path.normcase(view.file_name()):
+			window = view.window();
+			window.run_command("build");
+			window.run_command("close");
 			# g_current_file.unlink(); # build is an asynchronous call
+			
+			global g_last_view;
+			if g_last_view != None and window.active_view() != g_last_view:
+				window.focus_view(g_last_view);
+
+			g_last_view = None;
 			g_current_file = None;
