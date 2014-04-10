@@ -1,6 +1,6 @@
 [
 	{
-		"caption": "Lua Scratch",
-		"command": "lua_scratch"
+		"caption": "Scratch Pad",
+		"command": "scratchpad"
 	}
 ]

@@ -1,6 +1,6 @@
 [
 	{
 		"keys": ["ctrl+shift+r"],
-		"command": "lua_scratch"
+		"command": "scratchpad"
 	}
 ]
