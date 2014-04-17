@@ -80,7 +80,7 @@ class ScratchpadCommand(sublime_plugin.TextCommand):
 		return selectedText;
 
 	def run(self, edit):
-		if self.view.sel()[0].empty() and (not self.view.is_dirty() or not self.view.is_scratch()) and self.view.file_name() != None:
+		if self.view.sel()[0].empty() and not(self.view.is_dirty() or self.view.is_scratch()) and self.view.file_name() != None:
 			self.view.window().run_command("build");
 			return;
 
