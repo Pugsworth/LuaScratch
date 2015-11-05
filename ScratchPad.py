@@ -38,35 +38,15 @@ class ScratchpadFile: # class to delegate the data to
 	def unlink(self):
 		try:
 			os.unlink(self.file_name);
-		except OSError, e:
+		except OSError as e:
 			print("Couldn't remove file %s, %i, %s" % (self.file_name, e.errorno, e.strerror));
 
 
 class ScratchpadCommand(sublime_plugin.TextCommand):
 	def __get_filetype(self):
-		syntaxpath = os.path.join( os.path.split( os.path.normcase(sublime.packages_path()) )[0], os.path.normcase(self.view.settings().get('syntax')) ); # obtain the absolute path to the syntax file
-		# so now we have a path where the last 3 entries are: packages / syntax folder / syntax.tmlanguage
-		# splitpath = syntaxpath.split(os.sep);
-
-
-		text = None;
-		with open(syntaxpath, "rt") as f:
-			text = f.read(); # not sure how the fileTypes array can be implemented in the file, but we will just read the entire file for now
-
-			if text != None:
-				filetype = re.search("<key>.*(\n?).*<array>.*(\n?).*<string>(\w+)<\/string>", text).group(3); # hacky regex to find first filetype result
-
-				return filetype;
-
-			# name = re.search("", text); # another to get the name (py.sublime-build doesn't exist, but python.sublime-build does)
-
-			# if os.path.exists(path):
-
-			# elif os.path.exists():
-
-			# syntax.sublime-build
-			# name/syntax.sublime-build
-			# name/name.sublime-build
+		text = sublime.load_resource(self.view.settings().get("syntax"));
+		filetype = re.search("<key>.*(\n?).*<array>.*(\n?).*<string>(\w+)<\/string>", text).group(3); # hacky regex to find first filetype result
+		return filetype;
 
 	def __get_selection(self):
 		selection = self.view.sel()[0]; # only the first selection, for now...
